@@ -1,0 +1,13 @@
+html {
+  background-color: #B8DBFF;
+}
+
+#header {
+  position: absolute;
+  top: 0px;
+}
+
+#list {
+  position: relative;
+  margin: 150px 0px 0px 0px;
+}
