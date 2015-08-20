@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<head>
+  <title>McBlog</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="your-stylesheet-link-here.css">
+</head>
+
+<main>
+  <h1>Looping in Ruby vs. Looping in JavaScript</h1>
+  <h2>Differences and Similarities</h2>
+  <h4>August 20, 2015</h4>
+
+  <section>
+    <p>
+      As I find it easier to learn from coding exercises than from a textbook, I decided to re-do the Codecademy Ruby track and JavaScript track portions on looping.  The conceptual bases of while and for loops are similar in both languages.  However, there are differences in syntax that are important to remember.
+    </p>
+    <p>
+      In both Ruby and JavaScript, while loops are ideal for when you want to repeat an action but don't know how many times you'll have to repeat that action.  Also in both languages, for loops are ideal for when you know how many times you need to loop.
+    </p>
+    <p>
+      Here is an example of a Ruby while loop.
+    </p>
+    <p>
+      counter = 1
+      while counter < 11
+        puts counter
+        counter = counter +1
+      end
+    </p>
+    <p>
+      Here is an example of a JavaScript while loop.
+    </p>
+    <p>
+      count = 0;
+      var loop =  function(){
+            while(count < 3) {
+                console.log("I'm looping!");
+                count ++;
+          }
+      };
+    </p>
+    <p>
+      Here is an example of a Ruby for loop.
+    </p>
+    <p>
+      for num in 1...10
+        puts num
+      end
+    </p>
+    <p>
+      Here is an example of a JavaScript for loop.
+    </p>
+    <p>
+      for (var counter = 1; counter < 11; counter++){
+            console.log(counter);
+    }
+    </p>
+    <p>
+      There are certain looping techniques available in one language but not in the other.  For example, Ruby has the until loop, which is a complement to the while loop.  You can think of it as a backwards while loop.  See an example below.
+    </p>
+    <p>
+      i = 0
+      until i == 6
+        i += 1
+      end
+      puts i
+    </p>
+    <p>
+      In JavaScript, when you want to ensure that your loop runs at least one time no matter what, you can run a 'do'/'while' loop.
+    </p>
+    <p>
+      var loopCondition = false;
+      do {
+            console.log("I'm gonna stop looping 'cause my condition is" + loopCondition + "!");
+    } while (loopCondition);
+    </p>
+</section>
+</main>
