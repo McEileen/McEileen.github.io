@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<head>
+  <title>McBlog</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="your-stylesheet-link-here.css">
+</head>
+
+<main>
+  <h1>Asking Good Questions</h1>
+  <h2>Am I Clear?</h2>
+  <h4>September 3, 2015</h4>
+
+<section>
+  <p>
+    Back in week four I was struggling to answer a methods question that gave errors no matter what I did.  At that point I still felt timid asking question on the GooglePlus community, and so I emailed my friends Erik, a DBC grad, and Rene, another friend I met at a weekly hack night.  Below is the email I sent.
+  </p>
+  <p>
+    Hi Rene, I have a challenge that is asking me to create a method called my_array_finding_method that accepts an array and a letter as arguments then returns a new array of the words that contains that letter.  For example:
+  </p>
+  <p>
+    my_array_finding_method(i_want_pets, "t")
+  </p>
+  <p>
+    #=> should return ["want","pets","but"]
+  </p>
+  <p>
+    I AM STUCK.  SO, SO STUCK.  Here are multiple solutions that I have tried
+  </p>
+  <p>
+    Second failed solution that I did more recently
+  </p>
+  <p>
+    # def my_array_finding_method(source, thing_to_find)
+  </p>
+  <p>
+    #  new_array = []
+  </p>
+  <p>
+    #  source.each do |e|
+  </p>
+  <p>
+    #    new_array.push e.include?(thing_to_find.to_s) if e.include?(thing_to_find.to_s)
+  </p>
+  <p>
+    #  end
+  </p>
+  <p>
+    # end
+  </p>
+  <p>
+    Earlier failed solution
+  </p>
+  <p>
+    #def my_array_finding_method(source, thing_to_find)
+  </p>
+  <p>
+    #  new_array = []
+  </p>
+  <p>
+    #  source.each {|e| e.include_all(thing_to_find)}
+  </p>
+  <p>
+    #    if e.include_all(thing_to_find)
+  </p>
+  <p>
+    #      new_array.push(e)
+  </p>
+  <p>
+    #    else
+  </p>
+  <p>
+    #    end
+  </p>
+  <p>
+    #  return new_array
+  </p>
+  <p>
+    #end
+  </p>
+  <p>
+    And you probably wonder what my errors are......  This is for the more recent attempted solution.
+  </p>
+  <p>
+    1) PERSON 1: my_array_finding_method selects all words with a 't' in the original order
+  </p>
+      <p>
+       Failure/Error: expect(my_array_finding_method(i_want_pets, "t")).to eq ["want","pets","but"]
+      </p>
+      <p>
+       NoMethodError:
+      </p>
+      <p>
+         undefined method `include?' for 3:Fixnum
+     </p>
+     <p>
+       # ./my_solution.rb:12:in `block in my_array_finding_method'
+    </p>
+       # ./my_solution.rb:11:in `each'
+    <p>
+       # ./my_solution.rb:11:in `my_array_finding_method'
+    </p>
+    <p>
+       # ./methods_spec.rb:8:in `block (2 levels) in <top (required)>'
+    </p>
+
+    <p>
+      2) PERSON 1: my_array_finding_method selects all words with an 'a' in the original order
+    </p>
+        <p>
+         Failure/Error: expect(my_array_finding_method(i_want_pets, "a")).to eq ["want","have"]
+        </p>
+        <p>
+         NoMethodError:
+        </p>
+        <p>
+           undefined method `include?' for 3:Fixnum
+        </p>
+        <p>
+         # ./my_solution.rb:12:in `block in my_array_finding_method'
+        </p>
+        <p>
+         # ./my_solution.rb:11:in `each'
+        </p>
+        <p>
+         # ./my_solution.rb:11:in `my_array_finding_method'
+        </p>
+        <p>
+         # ./methods_spec.rb:12:in `block (2 levels) in <top (required)>'
+        </p>
+
+      <p>
+        I don't understand why I am getting the undefined method for include?  I get this even when I include .to_s to convert what it's receiving into a string.  I also tried other methods, like include, has_value and find, but none worked.
+      </p>
+    <p>
+      Any wisdom would be appreciated.  (I also realize that this is not code clinic and if you can't help, okey doke.)
+    </p>
+    <p>
+      THANK YOU, RENE.
+    </p>
+
+  <p>
+    I did several things right in this question to my friend.  I started out by succinctly explaining the challenge, and I then showed two solutions that I had attempted.  I also expressed politeness and gratitude.  I showed due diligence by telling Rene that I had tried to use .to_s to convert what include? was receiving into a string.  I further demonstrated due diligence by telling I had tried other methods, like has_value and find.
+  </p>
+  <p>
+    However, I think the layout of my email was somewhat unclear.  It would have flowed better if I pasted the errors immediately below the solutions that raised them.
+  </p>
+  <p>
+    Rene responded and confirmed that I was running into problems because the method include? only works on strings.  He then helped me find the right answer.  I was very grateful for his help.
+  </p>
+</section>
+</main>
