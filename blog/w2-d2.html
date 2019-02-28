@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="your-stylesheet-link-here.css">
+</head>
+
+<main>
+  <h1>Second Week of RC</h1>
+  <h2>Day 2: I Made a Mistake</h2>
+  <h4>February 26, 2019</h4>
+
+  <section>
+    <p>
+        This Tuesday I worked on a new feature for OpenOversight that would allow users to filter officers by the year they were employed.  I’d already begun work on this functionality last week, when I added the `last_employment_date` and `last_employment_details` feature to the officer model.  This week, my goal is to add a drop-down selector for the year field to each department page.
+    </p>
+    <p>
+        While starting on my new pull request (PR), I realized that the previous PR was incomplete.  True, I’d updated the `officer` model and the individual officer profile pages, but I hadn’t added the new fields to the “create an officer” form.  A bulk upload of officers would have included the new information, but not any new officers created through the form.  I also hadn’t updated the “edit” forms.  D’oh!
+    </p>    
+    <p>
+        When I realize that I’ve made a mistake, I try to figure out why I made it, and then I try to strategize about how to avoid repeating my mistake.  I had thought that I was well-organized in my approach to this PR, as I started out by making a checklist of all the tasks I needed to do on both the front-end and back-end.  However, I forgot to include the form work on my checklist.
+    </p>    
+    <p>
+        I think I failed to catch my mistake sooner because I didn’t test the functionality of adding a new officer from the front end.  I did test that an officer with `last_employment_date` and `last_employment_details` would have the proper information displayed, but I didn’t create such an officer through the web interface.  In the future, I’m going to avoid similar mistakes by more thoroughly testing new functionality I add to the app.
+    </p>
+  </section>
+</main>
