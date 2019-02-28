@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="your-stylesheet-link-here.css">
+</head>
+
+<main>
+  <h1>Second Week of RC</h1>
+  <h2>Day 4: Debugging a Containerized Application</h2>
+  <h4>February 28, 2019</h4>
+
+  <section>
+    <p>
+      Debugging a containerized application differs slightly from debugging an app running on my local machine, but after a few quick googles, I feel up to the challenge.
+    </p>
+    <p>
+      First, how to access logs for a docker container?  I started by typing `docker ps` into the terminal to see what docker images were running.
+    </p>
+    <img src="../imgs/DockerImagesScreenshot.png" alt="screenshot of terminal"> 
+    <p>
+      After finding the container id of the web container, I run `docker logs ${container_id}` to see the relevant logs.
+    </p>
+    <p>
+      But what reading the logs isn’t enough to pinpoint a problem?  What if I want to initiate a debugger session with pdb?
+    </p>
+    <p> 
+      In that case, I made a few changes to my `docker-compose.yml` so that I can run the app in debug mode and use pdb as needed.  I added the below lines to the dockerfile.
+    </p>
+    <code>
+      stdin_open: true
+      tty: true
+    </code>
+    <p>
+      Next, I run `docker attach ${container_id}` in the terminal and navigate to the app in localhost.  I’m now able to see the logs output as the app runs.  Even better, I can drop a breakpoint in the code and then run pdb commands such as `list` or `next` once the program hits the breakpoint.
+    </p>
+    <p>
+      Here’s a breakpoint I put in the code to create a new officer.
+    </p>
+    <img src="../imgs/pdb-set-trace.png" alt="breakpoint in code"/>
+    <p> 
+      And here’s a view of the pdb session open in terminal.
+    </p>
+    <img src="../imgs/active-pdb-session.png" alt="pdb session"/>
+  </section>
+</main>
