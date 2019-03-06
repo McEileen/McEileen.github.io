@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="your-stylesheet-link-here.css">
+</head>
+
+<main>
+  <h1>Third Week of RC</h1>
+  <h2>Day 1: Permissions</h2>
+  <h4>March 4, 2019</h4>
+
+  <section>
+    <p>
+        I need to write a migration to update the <code>officer</code> model in OpenOversight.  In order to generate the migration, I ran a flask command from within the docker container, like so:
+    </p>
+    <code>
+        docker exec -it openoversight_web_1 flask db migrate
+    </code>
+    <p>
+        However, I got an error saying that permission was denied.
+    </p>
+    <code>
+        PermissionError: [Errno 13] Permission denied: '/usr/src/app/myApp/migrations/versions/26d5da611fc8_.py'
+    </code>
+    <p>
+        After doing some sleuthing with a combination of Slack, StackOverflow, and many google searches, I realized why I wasn't able to generate the migration and save it to the <code>versions</code> folder.  The <code>versions</code> folder was owned by the user I typically work as, <code>mceileen</code>, and also belonged to the <code>mceileen</code> group.  Only the <code>mceileen</code> user and members of the <code>mceileen</code> group could write to this folder.  Meanwhile, the user that was generating the migration within the docker container was <code>www-data</code>, as specified in our project Dockerfile. <code>www-data</code> doesn't belong to the <code>mceileen</code> group and hence couldn't save files to the folder.
+    </p>
+    <p>
+        I feel a bit vulnerable writing about what I worked on today, because I'm still figuring it out.  I don't entirely understand how to persist migrations when running <code>flask db migrate</code> from within the docker container.  I also feel self-conscious that I don't know how to do this, because I have definitely generated migrations for past PRs to OpenOversight.  Until I figure out the proper way to generate migrations, and while I wait to hear back from more long-term project members, I took a bootleg, ahem, creative approach.
+    </p>
+    <p>
+        I checked permissions for the <code>versions</code> folder and saw the below.  (Also, yes, I did name my computer Willa.)
+    </p>
+    <code>
+        <p>
+            mceileen@Willa:~/Workspace/OpenOversight/OpenOversight/migrations$ ls -l
+            total 20
+        </p>
+        <p>
+            -rw-r--r-- 1 mceileen mceileen  770 Nov 23 15:16 alembic.ini
+        </p>
+        <p>
+            -rwxr-xr-x 1 mceileen mceileen 2934 Nov 23 15:16 env.py
+        </p>
+        <p>
+            -rwxr-xr-x 1 mceileen mceileen   38 Nov 23 15:16 README
+        </p>
+        <p>
+            -rwxr-xr-x 1 mceileen mceileen  494 Nov 23 15:16 script.py.mako
+        </p>
+        <p>
+            drwxrwxr-x 2 mceileen mceileen 4096 Mar  4 12:02 versions
+        </p>
+    </code>
+    <p>
+        Let's walk through what the above means.  The bash command <code>ls</code>code lists everything that is in a directory, and adding <code>-l</code> causes the information to print in a "long listing format" (thanks, man pages) which shows the permissions in the leftmost column.  Let's break down these specific permissions.
+    </p>
+    <p>
+        <b>d</b>rwxrwxr-x
+    </p>
+    <p>
+        The first symbol indicates the type of whatever we're dealing with.  For example, <code>versions</code> is a directory, and the <code>d</code> symbolizes directory.  Don't worry, the next paragraph will be more interesting.
+    </p>
+    <p>
+        d<b>rwx</b>rwxr-x
+    </p>    
+    <p>
+        The first three characters in the permissions column refer to the owner's permission.  The owner is whatever user made the file.  <code>r</code> stands for read, <code>w</code>, stands for write and <code>x</code> stands for execute, which means that the owner of the file can read, write and execute files in versions.
+    </p>
+    <p>
+        drwx<b>rwx</b>r-x
+    </p>
+    <p>
+        The next group of characters stand for the group's permission.  Members of the group can read, write and execute files in <code>versions</code>. 
+    </p>
+    <p>
+        drwxrwx<b>r-x</b>
+    </p>
+    <p>
+        The final group of three characters are for represent the permissions for other, meaning, every other user that is not the owner or a member of the group.  Other can read and write, but the <code>-</code> in place of <code>w</code> means that other cannot write to this directory.  Since the <code>www-data</code> user from the docker container was part of other, I received the <code>ERRNO13</code> permissions error.
+    </p>
+    <p>
+        Looking for a temporary way to persist migrations to <code>versions</code>, I changed permissions for other by adding the ability to write with the below command:
+    </p>
+    <code>
+        chmod o+w versions/
+    </code>
+    <p>
+        I successfully ran <code>docker exec -it openoversight_web_1 flask db migrate</code> and saved the generated migration to <code>/versions</code>.  Huzzah!  But, when I tried to open the migration in my texteditor to view it, I got another permissions error.  I ran <code>ls -l</code> and confirmed that <code>www-data</code> was both the owner and group for the new migration.  Additionally, although the owner had full read, write and execute permissions, the permissions for group and other were straight <code>-</code>s.  Since I was attempting to open the migration in my code editor as mceileen, I couldn't see anything.
+    </p>
+    <p>
+        Continuing the creative streak, I changed the group to mceileen with the below command
+    </p>
+    <code>
+        chgrp mceileen b601e03f4372_.py
+    </code>
+    <p>
+        Then I gave the group full permissions.
+    </p>
+    <code>
+            sudo chmod g+rwx b601e03f4372_.py
+    </code>
+    <p>
+        Voila!  I could now write a migration to the folder and view it.
+    </p>
+    <p>
+        DISCLAIMER:  I am not holding up what I did today as an example of best practices.  In a few days, I hope to be writing another blog about a better approach.  However, it was a day of educational yak-shaving, and I enjoyed how much practice I got with permissions.  I hope this blog can prove helpful to someone else who is new to changing permissions, too. 
+    </p>
+  </section>
+</main>
