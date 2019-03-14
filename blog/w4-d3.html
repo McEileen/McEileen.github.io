@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Fourth Week of RC</h1>
+  <h2>Day 3: The simple joy of TDD</h2>
+  <h4>March 12, 2019</h4>
+
+  <section>
+    <p>
+        Yesterday I submitted a pull request to OpenOversight to display officers who were employed within a certain year.  Now that I've worked through earlier challenges, like how to debug a dockerized application, I'm making progress at a faster rate on OO.  It's a good feeling.    
+    </p>
+    <p>
+        The "browse department" page already included one form to browse officers by demographic information.  I'd initially thought about making a separate form to view officers by year, but I decided to instead integrate the year selector into the existing form.  The front-end went from looking like this:
+    </p>
+    <img src="../imgs/NoYearSelector.png" width=1200/>
+    <p>    
+        to this
+    </p>
+    <img src="../imgs/YearSelectorAdded2.png" width=1200/>
+    <p>
+        Simple, but effective.  
+    </p>
+    <p>
+        Adding the year selector required a little bit of finagling with Python datetime objects.  Each officer has a <code>last_employment_date</code> field, which is null for officers who still work for a specific department.  The <code>utils.py</code> file has a method called <code>filter_by_form()</code>, that compares officers to the information a user puts into a form.  I added the below code to filter by year
+    </p>
+    <img src="../imgs/UtilsYearQuery.png" width=1200/>
+    <p>
+        Since the form selects for year and officers' <code>last_employment_date</code> fields are, well, dates, I couldn't immediately compare <code>year</code> and <code>last_employment_date</code>.  Instead, I created the <code>min_employment_date</code>, which is the first day of the selected year.  Next, I wrote a filter to return any officer whose <code>last_employment_date</code> occurs after the <code>min_employment_date</code>, or who doesn't have any <code>min_employment_date</code>.
+    </p>
+    <p>
+        After implementing the year filter, a bunch of existing tests for the browse form broke.  I got key errors because the existing tests didn't include the browse form's new field of <code>year</code>.  This reminded me how much I appreciate TDD and its quiet dependability.  Is there a way I can TDD household chores?  It's worth a google.
+    </p>
+  </section>
+</main>
