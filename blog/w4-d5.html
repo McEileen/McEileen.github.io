@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Fourth Week of RC</h1>
+  <h2>Day 5: Using a virtualenv to simplify migrations for a dockerized application</h2>
+  <h4>March 15, 2019</h4>
+
+  <section>
+    <p>
+        As discussed in a past blog about <a href="/w3-d1.html">struggles with permissions</a>, I previously fought to generate a migration for OpenOversight.  When I generated the migration from the web app docker container, like so 
+    </p>
+    <code>
+        docker exec -it openoversight_web_1 flask db migrate
+    </code>
+    <p>
+        I got an error because the user defined in the dockerfile, `www-data`, didn't have permission to write to my local folder containing the migrations.  However, if I ran the migration from my local machine, like so
+    </p> 
+    <code>
+        flask db migrate
+    </code>
+    <p>
+        I encountered errors from having different versions of dependencies.
+    </p>
+    <p>
+        Looking for a more straightforward solution, I followed the advice of a fellow developer on the project, Dan, and created a virtualenv to use for generating migrations.
+    </p>
+    <p>
+        First, I installed virtualenv.
+    </p>
+    <code>
+        python3 -m pip install --user virtualenv
+    </code>
+    <p>
+        Next, I navigated to the OpenOversight project directory and ran virtualenv.
+    </p>
+    <code>
+        python -m pip install --user virtualenv
+    </code>
+    <p>
+        Next step was to activate the virtualenv.
+    </p>
+    <code>
+        source env/bin/activate
+    </code>
+    <p>
+        I confirmed the virtualenv was activated by running <code>which python</code> and seeing that the directory returned was the working directory for OpenOversight, rather than my root installation of python.
+    </p>
+    <p>
+        Next, I installed all the necessary dependencies for OpenOversight:
+    </p>
+    <code>
+        pip install -r requirements.txt
+    </code>
+    <code>
+        pip install -r dev-requirements.txt
+    </code>
+    <p>
+        I navigated to the <code>OpenOversight</code> subdirectory and copied the <code>.env</code> file that I'd previously had in the <code>OpenOversight</code> parent directory into the subdirectory.  Next, I tweaked the <code>.env</code> file to include <code>FLASK_APP=app</code>, as I'd forgotten that in my previous version of <code>.env</code>.
+    </p>
+    <p>
+        I ran <code>flask db stamp head</code> then <code>flask db migrate</code> and inspected the migrations to ensure they were correct.  Next, I ran <code>flask db upgrade</code> to update the database.  In this specific instance, I added the `is_active` field to the department model, because I'm working on a new feature where admins can disable or delete departments.  Area coordinators will also have the ability to deactivate a department, but only for the department they belong to.
+    </p>
+    <p>
+        This was much, much easier than when I had to alter permissions for the local <code>migrations</code> folder after encountering permissions errors with the migration I generated from within the docker container.  virtualenv for the win!
+    </p>
+  </section>
+</main>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Fourth Week of RC</h1>
+  <h2>Day 4: Searching by Unique Internal Identifier</h2>
+  <h4>March 14, 2019</h4>
+
+  <section>
+    <p>
+      Both Baltimore and New York City's police departments have numbers unique to each police officer that you can use to identify them in the system.  However, Baltimore refers to this as a "sequence number" and New York City's police department refers to it as a "tax registry number."  At least for the NYPD, an officer's badge number can change when their assignment shifts, so it's not a reliable metric to search by.  Currently in the OpenOversight database, we refer to this unique number as the unique internal identifier.
+    </p>
+    <p>
+      I updated the <a href="https://www.openoversight.com/find">find officer form</a> to include a filter that searches by unique internal identifier.  Similarly to my work in <a href="/w4-d3.html">adding a year selector</a>, I updated an existing form, <code>FindOfficerForm</code>, to include the <code>unique_internal_identifier</code> field.  Next, I updated the <code>filter_by_form</code> method in <code>utils.py</code> to include a query for the internal identifier, like so:
+    </p>
+    <p>
+      <code>
+          if form['unique_internal_identifier']:<br/>
+          officer_query = officer_query.filter(<br/>
+              Officer.unique_internal_identifier.ilike('%%{}%%'.format(form['unique_internal_identifier']))<br/>
+      </code>
+    </p>
+    <p>
+      Similar to when a bunch of existing tests broke after I added the year selector, this change broke several tests.  Fixing the tests was fairly simple, but I'm not completely satisfied with the front-end aspect of this change.  The form instructs the user to search by unique internal identifier, then explains what the term refers to for both New York City and Baltimore.  I'm concerned that the wording is confusing to users, and it could be difficult to maintain as we add more departments with their own equivalent of the term.  Another developer on OO suggested that I add a text field to the department model, <code>name_of_unique_internal_identifier</code>, (eeek, that's a long field name!) then display the field in the find officer form.  Since the user enters the <code>unique_internal_identifier</code> after entering the department name, I'd already have the necessary info to find the <code>name_of_unique_internal_identifier</code>.  I'm going to make this change..... once I think of a better field name than <code>name_of_unique_internal_identifier</code>.  <code>name_of_uii</code>, maybe?  Hmmmm.
+    </p>
+  </section>
+</main>
