@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Fifth Week of RC</h1>
+  <h2>Day 1: Routes Refactor</h2>
+  <h4>March 18, 2019</h4>
+
+  <section>
+    <p>
+        Ruby was the first language I learned, and I often find myself comparing the structure of OpenOversight, which is written in Python and Flask, to a Ruby on Rails app.  Though I enjoy working in Python, I do think certain aspects of Ruby on Rails, particularly the routes' layout, is more intuitive.
+    </p>
+    <p>
+        Both Python-Flask and Ruby on Rails have straightfoward commands that display the routes.  For a Ruby on Rails app, you can run <code>rake routes</code> and see all of the routes.  For Python Flask, <code>flask routes</code>, or in this specific case, <code>docker exec -it openoversight_web_1 flask routes</code>.
+    </p>
+    <p>
+        In a Ruby on Rails app, all of the routes are housed within the <code>routes</code> file in the <code>config</code> folder.  In OpenOversight, the routes live within <code><a href="https://github.com/lucyparsons/OpenOversight/blob/develop/OpenOversight/app/main/views.py">main/views.py</a></code> and <code><a href="https://github.com/lucyparsons/OpenOversight/blob/develop/OpenOversight/app/auth/views.py"></a>auth/views.py</a></code>.  
+    </p>
+    <p>
+        I'm currently adding a departments dashboard to the app, which will allow admins to see all current departments and delete or deactivate existing departments.  Since admins need to be logged in to see the dashboard, I'm adding it to <code>auth/views.py</code>.  I'm also modeling it off the existing UsersAPI in <code>auth/views.py</code>, which allows admins to view all users and enable, disable or delete users.  There are some existing routes related to departments in OpenOversight, but they're split between <code>auth/views.py</code> and <code>main/views.py</code>.  The routes in <code>main/views.py</code> do have decorators of <code>@login_required</code> and <code>@admin_required</code>, which keep any unauthorized users from accessing them.  Nevertheless, I think the refactor will make the code easier to follow, and I'm excited to get it done.
+    </p>
+  </section>
+</main>
