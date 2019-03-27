@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Fifth Week of RC</h1>
+  <h2>Day 4: Chrome Extensions</h2>
+  <h4>March 21, 2019</h4>
+
+  <section>
+   <p>
+       As previously mentioned, I'm working on a project called <a href="/w3-d2.html">EmoReply</a> with a fellow Recurser, Jamie.  Though the project originated as a parody of Gmail's autoreply feature, we decided to make it a chrome extension, so that it can provide angsty autoresponses across various platforms.  Whether you're writing an email, commenting on a NYTimes article, or posting on a forum, EmoReply is at your service.
+   </p>
+   <p>
+       Jamie and I decided to make a roughly-functioning chrome extension before integrating the machine learning component.  Our goal was to build a chrome extension with a text box, which would take user input, then display the input at the extension's bottom.  Once we have our angsty auto reply learning, we'll display the emoreplies at the extension's bottom.
+   </p>
+   <p>
+       We learned various things while working on the chrome extension.  For example, the developer tools' console for a chrome extension is different than the developer tools' console for the main page.  Additionally, if you go to `chrome://extensions`, you can see any errors that occur for each extension.  However, the displayed errors won't automatically go away after you fix them.  Instead, you'll need to hit "clear errors."  (This seems like questionable UX to me.)
+   </p>
+   <p>
+       Struggling with a bug, Jamie and I posted a question on Recurse's internal chat, Zulip.  We were lucky to get a response from another Recurser, Cory, who teaches a class on chrome extensions at a local college.  If this doesn't illustrate the richness of Recurse's intellectual community, I don't know what does.  Cory agreed to meet with me, and with his help, I was able to make the extension display text in 15 minutes.  Yay, collaboration!
+   </p>
+   <p>
+       When Jamie and I looked through chrome extension tutorials, we saw extensions that had two scripts, <code>popup.js</code> and <code>background.js</code>.  We made our extension with only one script, which we called <code>background.js</code>.  At a certain point, we had mutually acknowledged that this was a misnomer, because we were using the <code>background.js</code> script to work on the popup.  "We should probably call it popup.js," we said, then kept coding in the background.js script.
+   </p>
+   <p>
+       This was silly.
+   </p>
+   <p>
+       Cory pointed out that Jamie and I had imported the poorly-named <code>background.js</code> script into <code>popup.html</code> with the below code:
+   </p>
+   <p>
+       <code>
+            <script src="background.js"></script>
+       </code>
+   </p>
+   <p>
+       We had also made reference to the <code>background.js</code> script in the <code>manifest.json</code>, as seen below:
+   </p>
+   <p>
+       <code>
+            "background": {
+                "scripts": ["background.js"],
+                "persistent": false
+            },
+       </code>
+   </p>
+   <p>
+       Since we made reference to the same script twice, we were attempting to run it simultaneously in two different places.  This, too, was silly.
+   </p>
+   <p>
+       As a quick fix, I renamed our existing <code>background.js</code> file as <code>popup.js</code> and made reference to it in the <code>popup.html</code>, like so.
+        <code>
+            <script src="popup.js"></script>
+        </code>
+        Then, as a quick fix, I created a blank <code>background.js</code> and kept the reference to it in <code>manifest.json</code>.
+   </p>
+   <p>
+       The chrome extension now displays the input text after the button is clicked.  Huzzah!  Here's the repo, for anyone who is interested in more details.  <a href="https://github.com/McEileen/EmoReply/tree/feature/chrome-extension">EmoReply</a>
+   </p>
+  </section>
+</main>

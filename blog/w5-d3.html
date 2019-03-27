@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Fifth Week of RC</h1>
+  <h2>Day 3: :z</h2>
+  <h4>March 20, 2019</h4>
+
+  <section>
+    <p>
+      I encountered a frustrating selenium bug while wrapping up an OpenOversight pull request.  As happens sometimes in open-source projects, we have a <a href="https://github.com/lucyparsons/OpenOversight/pull/506">pull request that's been open since the summer</a>, and my goal is to close it ASAP.  The pull request now has all of its required functionality, but it also has failing tests.  The tests were failing because I was using incorrect chrome selectors with selenium.  However, the failures which seemed relatively simple to debug, only occurred in the Travis CI build.  When I ran the tests locally, they erred out on <code>browser.get("http://localhost:5000")</code> with the below error
+    </p>
+    <p>
+      <code>
+        E       selenium.common.exceptions.WebDriverException: Message: Reached error page: about:neterror?e=connectionFailure&u=http%3A//127.0.0.1%3A5000/shutdown&c=UTF-8&f=regular&d=Firefox%20can%E2%80%99t%20establish%20a%20connection%20to%20the%20server%20at%20127.0.0.1%3A5000.
+      </code>
+      <code>
+        /usr/local/lib/python3.7/site-packages/selenium/webdriver/remote/errorhandler.py:242: WebDriverException
+      </code>
+    </p>
+   <p>
+     After consulting with team members, one of them suggested I edit <code>docker-compose.yml</code>.  In my version of <code>docker-compose.yml</code>, I had the below under the postgres service:
+   </p>
+   <p>
+     <code>
+        volumes:
+      </code>
+        <code>
+          - ./container_data/postgres:/var/lib/postgresql/data:z
+        </code>
+   </p>
+   <p>
+     The <code>:z</code> flag at the end of the volume was causing problems.  Because the Travis CI build doesn't use docker, we weren't getting the same bugs in the Travis environment.  Our team had previously added <code>:z</code> to the end of the docker volume to try to keep docker from reading <code>container_data</code>.  Since then, the team has added <code>container_data</code> to the <code>.dockerignore</code>, and we no longer need the nefarious <code>:z</code> flag at the end of volumes.
+   </p>
+   <p>
+     As much as I trusted a fellow OpenOversight team member's comment that " the <code>`:z`</code> flag on docker volumes can do some fishy things," I also had to discover for myself - what are those fishy things?  Why is <code>:z</code> such a bad idea?
+   </p>
+   <p>
+     So, I turned to the googles.
+   </p>
+   <p>
+     After reading through a <a href="https://github.com/moby/moby/issues/30934">spirited github thread</a> and <a href="https://docs.docker.com/storage/bind-mounts/">docker documentation</a>, I learned that <code>:z</code> indicates that the data is shared among multiple containers.  I also learned that both <code>:Z</code> and <code>:z</code> can affect the host system and change the host system's security labels, which can in turn make it impossible for someone to log in after using these options.  (Yikes!)  However, I'm still a little foggy on why the <code>:z</code> label broke selenium in particular.  Maybe it's because we were using selenium to log into OpenOversight?  This is definitely on my list of things to ask Recursers about on Zulip... I'm glad the bug is fixed, however, my curiosity persists!
+   </p>
+  </section>
+</main>
