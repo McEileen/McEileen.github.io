@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Sixth Week of RC</h1>
+  <h2>Day 1: SSH and vim</h2>
+  <h4>March 25, 2019</h4>
+
+  <section> 
+    <p>
+      My 2016 self once tweeted, "Working with vim does not fill me with vigor."  In response, I received several helpful tweets, some of which were as short as ":wq!" and others which started a back-and-forth on how to effectively use vim.  Personal favorite moment: When a past classmate answered, "vim is great once you know it," followed by a second tweet, "but it stinks when you open googledocs and realize you don't remember how to use a mouse."  (These are paraphrases, as I no longer use my 2016 twitter account.)
+    </p>
+    <p>
+      Though I'd worked with vim previously, I had honestly never used ssh before this week.  I feel self-conscious admitting that, because ssh seems like one of those ubiquituous acronyms that all software developers should know.  Maybe I'm displaying some internalized <a href="https://www.recurse.com/social-rules">feigned surprise</a>?  In the spirit of RC, I'm working to be open about what's new to me.  Similar to vim, ssh turned out to be great!  And, no, it didn't cause me to forget how to use the mouse, or any other tools.
+    </p>
+    <p>
+      As discussed in <a href="/w5-d5.html">my last blog</a>, I'm currently working on wrapping up a pull request that's been open since the summer.  With the help of another project member, whom I'm referring to as Very Smart Person (VSP), because I haven't (yet) gotten their consent to blog about them, we recently debugged a situation where tests were failing due to json serialization errors.  Unfortunately, we now have another strange error where tests fail in the Travis CI, but they pass when I run the tests in the project docker container.  Curious.
+    </p>
+    <p>
+      The two relevant tests, <a href="https://github.com/lucyparsons/OpenOversight/blob/6e837105a523a6065c5e8350c79b6f7d07536c50/OpenOversight/tests/test_functional.py#L101">test_last_name_capitalization</a>, and <a href="https://github.com/lucyparsons/OpenOversight/blob/6e837105a523a6065c5e8350c79b6f7d07536c50/OpenOversight/tests/test_functional.py#L143">test_last_name_capitalization_short_name</a>, both confirm that an officer's last name is properly capitalized when a user creates a new officer entry.  This functionality was already in place and tested before we implemented this pull request, which gives users the ability to directly upload photos through an officer's profile page.  However, the direct upload feature introduces an extra page in between the "create officer" and "view officer profile" steps, which means that it also introduces an extra "element.click()" step in selenium.
+    </p>
+    <p>
+      I was struggling to debug the failing tests, since I couldn't use pdb to step through the tests in Travis.  I was able to navigate the tests with pdb in docker, but since the tests passed in that environment, debugging in docker wasn't much help.  My trusty team member, VSP, created a virtual machine that replicated the Travis environment, with ubuntu trusty (see what I did there?) and Python 2.7 and Python 3.6.  (We've transitioned the project to Python 3.6, however, we still run the Travis build for both Python 2.7 and Python 3.6.)  He then requested my ssh public key, and granted me permission to access the VM.
+    </p>
+    <p>
+      Before any of this could happen, I had to generate a public ssh key.  First, I confirmed that I hadn't previously generated a ssh key on my machine by running the below command:
+    </p>
+    <pre>
+      <code>
+        ls ~/.ssh/
+      </code>
+    </pre>
+    <p>
+      My terminal returned nothing, which made me confident that I didn't have any existing ssh keys.  Next, I generated ssh keys with the below command:
+    </p>
+    <pre>
+      <code>
+          ssh-keygen -t rsa 
+      </code>
+    </pre>
+    <p>
+      For my fellow ssh rookies, let's walk through what the above means.  The <code>-t</code> flag, followed here by <code>rsa</code>, indicates what type of key we'll be generating.  If we invoke <code>ssh-keygen</code> without passing any arguments, it will generate an RSA key.  I now realize I could have written <code>ssh-keygen</code> instead of <code>ssh-keygen -t rsa</code>.  Thanks for the lesson, ssh man pages!  Next time I'll save myself those keystrokes.
+    </p>
+    <p>
+      Once I had permission to ssh into the VM that replicated the Travis build, I ssh'ed in by typing <code>ssh ${name_of_target_VM} </code>.  My OO team member had left a screen session called <code>ootesting</code> running, which had the python 3.6 virtualenv activated and the correct PATH.  
+    </p>
+    <p>
+      Screen was also new to me, but a few quick googles revealed that screen allows you to reconnect to a running process after ending connection to a VM.  This can be helpful if you unintentionally lose connection during an involved processs, or, as in this case, if you are working on something that you want other developers to later be able to access.
+    </p>
+    <p>
+      To see the screen process, I ran <code>htop</code> and then used the <code>F4: filter</code> command to find the screen process's PID.  However, I also could have typed <code>screen -ls</code> to see all current sessions of screen.  Since in this case I knew the name of the screen process, I was able to connect by typing <code>screen -r ootesting</code>.
+    </p>
+    <p>
+      Once I connected to the running tests, I used vim to place breakpoints at relevant points in the code.  I typically use a text editor, like VS Code, or an IDE, like Intellij, to make such code edits.  However, vim worked well for this ssh session, since I didn't have access to a GUI.
+    </p>
+    <p>
+      The tests were initially failing in the VM because a css selector that looked for the button to directly upload officers' images, as shown below
+      <pre>
+        <code>
+            images_button = browser.find_element_by_css_selector("#submit-officer-images")
+        </code>
+      </pre>
+      was returning an "element not found" error.  I added the below code
+      <pre>
+        <code>
+            wait_for_element(browser, By.ID, "submit-officer-images")
+        </code>
+      </pre>
+      which I thought would give the element time to load.  The tests did pass in the VM once I made this change, but they still failed in the Travis build.  At this point, I'm unclear on what caused the discrepancy between the VM and the Travis build.  Shoot.
+    </p>
+    <p>
+      I asked for help on zulip, the Recurse Center's internal chat system, and a fellow recurser informed me that you can ssh into Travis.  That means I can use pdb to step through the failing tests in Travis, which removes the need for the virtual machine.  Excellent.  Tomorrow, I'll be ssh'ing into Travis to continue debugging the error.
+    </p>
+  </section>
+</main>
