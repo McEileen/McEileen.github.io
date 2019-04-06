@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Sixth Week of RC</h1>
+  <h2>Day 4: Answering My Own StackOverflow Question</h2>
+  <h4>March 28, 2019</h4>
+
+  <section> 
+    <p>
+      I'm proud of myself because today I posted a question on StackOverflow, then answered it myself within 20 minutes!  I've figured out my own StackOverflow questions before, but never this quickly or smoothly.  It felt good to go back and edit the post with further information.
+    </p>
+    <p>
+      Since I've finally made progress on an older pull request that enables direct photo uploads through officers' profile pages, I'm now getting back to work on more recent OpenOversight pull requests.  Currently, I need to respond to feedback on a pull request that adds the <code>unique_internal_identifier</code> string column to the departments table.
+    </p>
+    <p>
+      I switched to the  <code>unique_internal_identifier</code> branch, which already had the relevant migration, and ran <code>flask db stamp head</code>.  The terminal gave me a message of  <code>applying stamp revision 3f8ca0b9fe63</code>, which was the migration that created the new field.  However, I next inspected the database in psql, and the field wasn't there.  When I ran <code>flask db upgrade</code>, flask didn't apply the relevant migration, because it thought the database already had the <code>unique_internal_identifier</code> field in place.
+    </p>
+    <p>
+      I realized that if I stamped flask db head to be at a previous migration, it would recognize and apply the migration that adds the <code>unique_internal_identifier</code>.  Feeling intrepid, I ran <code>flask db history</code> to see the list of migrations, and noted that the previous revision number was <code>2a9064a2507c</code>.  I ran <code>flask db stamp 2a9064a2507c</code> to set the database head to that revision without performing any migrations.  By running <code>flask db current</code>, I could confirm that I had correctly changed the db head.  Finally, I ran <code>flask db upgrade 3f8ca0b9fe63</code> to apply the <code>unique_internal_identifier</code>> migration.  I validated that migration occurred successfully by running <code>flask db current</code> and also inspecting the <code>departments</code> table in psql.  The <code>unique_internal_identifier</code> column now appears.
+    </p>
+  </section>
+</main>
