@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Eighth Week of RC</h1>
+  <h2>Day 2: Debugging Debugging</h2>
+  <h4>April 9, 2019</h4>
+
+  <section>
+    <p>
+      No, that title is not a typo.
+    </p>
+    <p>
+      Earlier in my time at the Recurse Center, I gave a presentation on <a href="http://mceileen.github.io/blog/w2-d4.html">how to debug a dockerized application.</a>  I felt sheepish when a technique that I previously presented on started failing!
+    </p>
+    <p>
+      I set a breakpoint in the class <code>FindOfficerForm()</code> in <code>forms.py</code>, made the necessary changes to the <code>docker-compose.yml</code> and then attached to the docker container.  But!  This time the terminal stayed blank and the pdb prompt didn't open.  Additionally, the website would hang and refuse to load.  After the fact, when I ran <code>docker logs ${web_container_id}</code>, the logs showed that pdb had been active.
+    </p>
+    <p>
+        One of my goals at Recurse is to be more open about asking questions and admitting when I don't know things, even if it's something I feel that I should know.  Thankfully, Recurse's <a href="https://www.recurse.com/social-rules">social rule of no feigned surprise</a> makes this goal easier for me.  With this goal in mind, I turned to zulip, Recurse's internal chat system, and started asking questions in the python stream.  I also turned to the Lucy Parsons Labs slack, as the LPL crew is always helpful.
+    </p>
+    <p>
+      I tried many, many things to get this to work.  First, I tried to use ipdb instead of pdb and still attach to the docker container.  When I tried that option, the app would quit once I started it up.  At the advice of a Recurser alum who helped via Zulip, I stopped attaching to the docker container and instead I tried to use <code>docker-compose run --service ports web</code>.  This option displayed the pdb prompt, but it wouldn't properly process the input, as seen below:
+    </p>
+    <pre>
+      <code>
+          -> class FindOfficerForm(Form):
+          (Pdb) run
+          *** NameError: name 'rnu' is not defined
+      </code>
+    </pre>
+    <p>
+      Curious!
+    </p>
+    <p>
+      Taking a different approach, I next tried to run <code>flask shell</code> from within the docker container.  This did display logs, but it didn't allow me to run the web app at the same time.  Because I needed to navigate to the page where users search for an officer, that wasn't much help.
+    </p>
+    <p>
+      A member of the Lucy Parsons Labs slack suggested that the <code>tty</code> option might be causing the pdb output to behave strangely. They suggested I run <code>lsof -p $yourpid</code> and said that the FD column should have an entry that looks like 1u and that the far right column is then probably pointing somewhere unexpected. Their advice also inspired me to learn more about the FD column that appears in lsof output, for which <a href="https://stackoverflow.com/questions/25140730/what-does-the-fd-column-of-pipes-listed-by-lsof-mean">this stackoverflow post</a> proved very helpful.
+    </p>
+    <p>  
+      Unfortunately, I can't run lsof on the pdb process because I'm not able to run lsof on a mounted file system, such as the dockerized application OpenOversight, that is not owned by my user. Here's <a href="https://unix.stackexchange.com/questions/171519/lsof-warning-cant-stat-fuse-gvfsd-fuse-file-system">another stackexchange post that proved helpful while working with lsof.</a>  I tried running lsof from inside the docker container but wasn't able to do so, even when I used --privileged while execing into the docker container.
+    </p>
+    <p>
+      Another helpful person on the LPL slack suggested that I kill the web container started up by <code>make start</code>, then manually start the web container with <code>docker-compose run</code>.  See below for the exact commands they suggested.
+    </p>
+    <pre>
+      <code>
+          $ docker-compose kill web
+          $ docker-compose run --rm -p 3000:3000 web flask run --host=0.0.0.0 --port=3000
+      </code>
+    </pre>
+    <p>
+      This was extremely similar to the earlier <code>docker-compose --service-ports web</code> option, and I expected similar results.  However!  When I first ran it, I was able to successfully access the pdb prompt in the terminal.  I sent the LPL member a jubilant slack message, only to ruefully encounter the below error a few minutes later.
+    </p>
+    <pre>
+      <code>
+        `(Pdb) list`
+        `*** NameError: name 'it' is not defined`
+      </code>
+    </pre>
+    <p>
+      Again, the pdb prompt was mutating the input.
+    </p>
+    <p>
+      After continued tinkering, I found that I could execute the <code>docker-compose run</code> command and successfully access the pdb prompt if I removed the below lines from the <code>docker-compose.yml</code> file.  
+    </p>
+    <pre>
+      <code>
+        stdin_open: true
+        tty: true
+      </code>
+    </pre> 
+    <p>
+      Now when I typed "run," "list," or other prompts into pdb, my input wasn't mutated.  I decided that the LPL buddy who thought the <code>tty: true</code> messed up pdb's output must have been right.  At last!  I was done.
+    </p>
+    <p>
+      .....
+    </p>
+    <p>
+      Or was I?
+    </p>
+    <p>
+      A Recurse alum, whom I'll call Recurse Alum For the Win (RAFW), reached out to me on Zulip and expressed interest in recreating the error.  They were curious about why the pdb prompt was mutating the input.  After RAFW did some of their own debugging, they discovered that the placement of the breakpoint had a great deal to do with why the code was breaking.  When I placed the breakpoint in <code>FindOfficerForm</code> in <code>forms.py</code>, I was placing the breakpoint in a class, which meant that the code ran at import time.  Consequently, a pdb process was started at import time, and then the werkzeug reloader would trigger a second pdb process.  The two pdb processes would compete over stdin, turning a command like "list" into "it."  As a result, neither of these processes could respond to commands, and it was impossible to debug with pdb.  Meanwhile, code in a view doesn't run at import time, so a breakpoint in one of the views only causes one pdb process to run.
+    </p>
+    <p>
+      Another thing RAFW pointed out is that <code>stdin_open</code> and <code>tty</code> are mapped to the <code>-i</code> and <code>-t</code>options of docker.  The flag <code>-it</code> creates an interactive docker session, such as when someone runs <code>docker exec -it ${docker_container_id} /bin/bash </code> to start running commands from within the docker container.  Since <code>-it</code> is a default option when using the command <code>docker-compose run</code>, the changes I made to the <code>docker-compose.yml</code> file weren't as meaningful as I thought.  However, the <code>stdin_open</code> and <code>tty</code> options could be more influential if I used <code>docker up</code> instead of <code>docker-compose run</code>.
+    </p>
+    <p>
+      RAFW followed up with me later the same day about the complications with the werkzeug reloader and the pdb prompt.  When they ran the app with <code>FLASK_DEBUG=0</code>, which disables the reloading, they didn't see the bug.  Thanks to them, I can debug OpenOversight again.
+    </p>
+    <p>Debugging debugging: it takes a village.</p>
+  </section>
+</main>

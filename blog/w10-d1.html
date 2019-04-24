@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Tenth Week of RC</h1>
+  <h2>Day 1: Flask Pluggable Views</h2>
+  <h4>April 22, 2019</h4>
+
+  <section>
+    <p>
+      This afternoon I continued working on a Departments API for OpenOversight.  I'm using <a href="http://flask.pocoo.org/docs/1.0/views/">Flask's pluggable views</a> and starting by creating a dashboard where admins can view all departments, as well as the associated area coordinators.  Here's a screenshot of the still in progress page, with test data:
+    </p>
+    <img src="../imgs/departmentsApi.png"/>
+    <p>
+        I hit a little bit of a roadbump when creating the <code>area_coordinators</code> column.  I wanted to have each area_coordinator's name link to their individual user page, which can be found at the route <code>users/auth/${user_id}</code>.  I wrote the <code>find_area_coordinators(department_id)</code> to pass along the area coordinators' data from <code>views.py</code> to the <code>departments.html</code>, as seen below:
+    </p>
+    <pre>
+        <code>
+            def find_area_coords(department_id):
+            area_coords = db.session.query(Department, User).filter(department_id == User.ac_department_id).all()
+            for ac in area_coords:
+                return {"id": ac[1].id, "username": ac[1].username} 
+        </code>
+    </pre>
+    <p>
+        Here's the column with the area coordinator's name in the <code>departments.html</code> template.
+    </p>
+    <pre>
+        <code>
+            <td><a href="/auth/users/{{find_area_coords(department.id)['id']}}">{{ find_area_coords(department.id)['username']}}</a></td>
+        </code>
+    </pre>
+    <p>
+        Initially, I had written <code><a href="auth/users/{{find_area_coords(department.id)['id']}}"></a></code>, neglecting the opening slash at the link's start.  This caused the link to take me to the route <code>/auth/departments/auth/users</code>, which definitely wasn't what I wanted.  So much depends on a forward slash.
+    </p>
+  </section>
+</main>

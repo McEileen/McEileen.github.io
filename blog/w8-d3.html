@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Eighth Week of RC</h1>
+  <h2>Day 3: Fun with Forms</h2>
+  <h4>April 10, 2019</h4>
+
+  <section>
+    <p>
+      I'm currently fixing up a pull request on OpenOversight's Find Officer Form, which starts by asking users to select a police department.  The next step asks users to enter whatever they remember of the officer's badge number, last name, and their "unique internal identifier."  The unique internal identifier refers to a unique number that departments use to identify officers.  Different departments have different terms for this concept, which makes it hard to represent in the form.  If we say "unique internal identifer," users won't know what we mean.
+    </p>
+    <p>
+      I decided to get around this by dynamically setting the field, and assigning it different values depending on which department users select in the form's first step.  However!  Whichever department the user enters in the form, which we can access with the code <code>form.data['department']</code>, won't be available until the form is submitted.  In order to access the department selection before the user submits the form, I use Javascript to access the form selection, like so:
+    </p>
+    <pre>
+      <code>
+        let $deptSelectionId = $('#dept').val()
+      </code>
+    </pre>
+    <p>
+      I was initially irritated to find that I couldn't use Python to access form data.  The <code>form.validate_on_submit()</code> method was so handy, I had high hopes that there'd be a similar method that didn't require submission, like <code>form.validate()</code>.  I also tried looking for a way to validate individual fields, but my googles proved fruitless.  Lesson of the day: Stay flexible, and don't run from JQuery.
+    </p>
+  </section>
+</main>

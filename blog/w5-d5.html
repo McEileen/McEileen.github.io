@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Fifth Week of RC</h1>
+  <h2>Day 5: Environment-Specific Bugs</h2>
+  <h4>March 22, 2019</h4>
+
+  <section>
+    <p>
+      While working on a pull request that enables OpenOversight users to directly upload images on an officer's profile, I encountered an extremely strange bug.  Suddenly, three tests related to tokens and authentication started failing.  This bug was strange both because it had nothing to do with the code I was updating, and because it only occurred in Linux environments.  
+    </p>
+    <p>
+      I worked through it with a Recurser and a non-Recurser who also works on OpenOversight.  (And whom I'll now refer to as Very Smart Person, VSP, because I didn't ask in advance if they'd be okay with me blogging about them.)  After lots of mutual confusion, VSP figured out that the module we use for all token crypto, <a href="https://pypi.org/project/itsdangerous/">itsdangerous</a>, uses either <a href="https://pypi.org/project/simplejson/">simplejson</a> or json as the internal serializer.  When the non-standard library of simplejson is not available in the execution environment, itsdangerous resorts to using json for serialization.
+    </p>
+    <p>
+      Both simplejson and json say they return strings, not bytes, from their <code>.dumps()</code> methods.  For reasons that remain unclear, our tokens were getting dumped as bytes.  VSP saved the day by adding <code>.decode(utf-8)</code> to the token generating functions in the User model.  Now the tests pass in all environments.
+    </p>
+    <p>
+      Lesson learned: Ask for help!  Environment-specific bugs, like many things, are easier to debug with help.
+    </p>
+  </section>
+</main>
