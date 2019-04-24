@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Sixth Week of RC</h1>
+  <h2>Day 2: Teamwork Makes the Dreamwork</h2>
+  <h4>March 26, 2019</h4>
+
+  <section> 
+    <p>
+      At the end of <a href="../w6-d1.html">Monday</a> I was still struggling with an environment-specific bug in OpenOversight.  Two functional tests passed when I ran them in the docker environment, but they failed in the Travis build.  A fellow OpenOversight member created a VM to replicate the Travis CI build, and the tests also failed in the VM.  I reached out to a fellow OpenOversight team member who figured out that race conditions were causing the tests to fail.  The `.click()` in the test was async, which means that subsequent searches in the DOM were getting called with stale data.  The team member wrote a `wait_for_page_load()` context manager, which made the code wait until the DOM is refreshed, then wrapped the `.click()` calls in the `wait_for_page_load()` context manager, which made the code wait until the DOM is refreshed.  Now the tests pass and the PR is FINALLY ready for review.  Teamwork makes the dreamwork!
+    </p>
+  </section>
+</main>

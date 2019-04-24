@@ -1,5 +1,7 @@
 html {
-  background-color: #B8DBFF;
+  /* below is light grey background */
+  background-color: #f8f8fa;
+  color: #011f4b;
 }
 
 #header {

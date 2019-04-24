@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Eighth Week of RC</h1>
+  <h2>Day 4: Bash and Leetcode</h2>
+  <h4>April 11, 2019</h4>
+
+  <section>
+    <p>
+      Today at post-lunch prep (PLP) we did a problem in bash, which was a PLP first for me.  The problem, <a href="https://leetcode.com/problems/valid-phone-numbers/">193. Valid Phone Numbers</a>, asked us to write a single-line bash expression to find valid phone numbers.  My pair and I started by using a few helpful websites, namely, <a href="www.regexr.com">www.regexr.com</a>, <a href="www.rubular.com">www.rubular.com</a>, and ye olde <a href="www.stackoverflow.com">www.stackoverflow.com</a>, to devise a regular expression that would match valid phone numbers.  See below for our solution.
+    </p>
+    <pre>
+      <code>
+        while read -r line; do if [[ $line =~ ^(\([0-9]{3}\) |[0-9]{3}-)[0-9]{3}-[0-9]{4}$ ]]; then echo $line; fi; done < file.txt;
+      </code>
+    </pre>
+    <p>
+      Disclaimer: Another Recurser came up with a faster solution by using grep instead of a while loop.  According to their explanation, grep is more efficient than while loops for searching multiple lines in a file.  Good to know!
+    </p>
+  </section>
+</main>

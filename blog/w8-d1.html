@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Eighth Week of RC</h1>
+  <h2>Day 1: Bit Manipulation</h2>
+  <h4>April 8, 2019</h4>
+
+  <section>
+    <p>
+        Recursers regularly get together and work on interview problems during post-lunch prep, affectionately known as PLP, or "ploop".  Today I ran post-lunch prep, in part because I wanted to choose our daily topic: bit manipulation!  I didn't have much prior experience with bit manipulation, which is why I wanted a PLP focused on it. 
+    </p>
+    <p>
+        Since we were an odd group, I paired/tripled with two Recursers, Jamie and Brandon.  We worked on <a href="https://leetcode.com/problems/binary-number-with-alternating-bits/">Leetcode Problem 693: Binary Number with Alternating Bits</a>.  Given the task of finding if a positive integer has alternating bits, we came up with the below solution.
+    </p>
+    <pre>
+        <code>
+                class Solution:
+                def hasAlternatingBits(self, n: int) -> bool:
+                    last_value = n & 1
+                    while n is not 0:
+                        n = n >> 1
+                        next_value = n & 1
+                        if last_value == next_value:
+                            return False
+                        last_value = next_value
+                    return True
+        </code>
+    </pre>
+  </section>
+</main>
