@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<head>
+  <title>Blogging My Time at the Recurse Center</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../my-website-stylesheet.css">
+</head>
+
+<main>
+  <h1>Tenth Week of RC</h1>
+  <h2>Day 5: Testing, Testing</h2>
+  <h4>April 25, 2019</h4>
+
+  <section>
+    <p>
+      Today I submitted a pull request to add the ability to enable, disable, and delete departments from OpenOversight.  Admins can do all of the previous behaviors to any department, whereas department area coordinators only have the ability to enable or disable their individual department.  Additionally, admins can edit departments, such as by changing the department name or abbreviation.  OpenOversight already had some of this existing functionality in place, but it wasn't centralized in a single location.  I created a `DepartmentsAPI`, which is displayed in a departments dashboard that only admins can access.  Meanwhile, area coordinators can will view a "Department" link within the website's top menu, which takes them to an enable/disable form for their individual department.
+    </p>
+    <p>
+      I'm proud of myself for writing tests that were thorough and covered a variety of cases.  My first job stressed TDD, and I still place a lot of faith in tests.  That being said, I want to share some topics that I consider when trying to come up with thorough tests.
+    </p>
+    <ol>
+      <li>
+        Permissions
+      </li>
+        <ul>
+          <li>
+            Who is allowed to do what?
+          </li>
+          <li>
+            Are only some users allowed to access routes?  Have you confirmed that via tests?
+          </li>
+          <li>
+            Can only some users view certain information?  Have you tested that?
+          </li>
+          <li>
+            Is logging in required?  Test that.
+          </li>
+        </ul>
+        <li>
+          Data
+        </li>
+          <ul>
+            <li>
+              Can you confirm when data has changed?
+            </li>
+            <li>
+              How do data changes affect the application's function?
+            </li>
+            <li>
+              How do data changes alter the application's display?
+            </li>
+            <li>
+              How does the application handle corrupted data?
+            </li>
+            <li>
+              What happens if a user passes malicious data?
+            </li>
+            <li>
+              Have you protected against a possible SQL injection attack?
+            </li>
+          </ul>
+        <li>
+          Existing Tests
+        </li>
+          <ul>
+            <li>
+              Do these still pass?
+            </li>
+            <li>
+              Are you sure?
+            </li>
+          </ul>
+        <li>
+          Edge Cases
+        </li>
+          <ul>
+            <li>
+              What happens if the number of users spikes?
+            </li>
+            <li>
+              What happens if a "None" or "Null" is entered?
+            </li>
+          </ul>
+    </ol>
+  </section>
+</main>
